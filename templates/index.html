@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gematria Matrix</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: black;
+      color: #00ff41;
+      font-family: 'Share Tech Mono', monospace;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+    }
+    input, button {
+      background: black;
+      color: #00ff41;
+      border: 1px solid #00ff41;
+      padding: 10px;
+      font-size: 1rem;
+      margin: 5px;
+    }
+    #result, #history {
+      margin-top: 2rem;
+      white-space: pre-wrap;
+    }
+    button:hover {
+      background: #002a00;
+    }
+  </style>
+</head>
+<body>
+  <h1>Matrix Gematria Calculator</h1>
+  <input type="text" id="phrase" placeholder="Enter phrase">
+  <button onclick="calculate()">Calculate</button>
+  <button onclick="loadHistory()">View History</button>
+  <button onclick="exportCSV()">Export CSV</button>
+
+  <div id="result"></div>
+  <div id="history"></div>
+
+  <script>
+    async function calculate() {
+      const phrase = document.getElementById('phrase').value;
+      const res = await fetch('/calculate', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ phrase })
+      });
+      const data = await res.json();
+      document.getElementById('result').innerText = `\"${data.phrase}\" = ${data.value}`;
+    }
+
+    async function loadHistory() {
+      const res = await fetch('/history');
+      const data = await res.json();
+      document.getElementById('history').innerText = 'History:\\n' + data.map(entry => `\"${entry.phrase}\" = ${entry.value}`).join('\\n');
+    }
+
+    function exportCSV() {
+      window.location.href = '/export';
+    }
+  </script>
+</body>
+</html>
